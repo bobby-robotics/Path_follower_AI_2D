@@ -1,13 +1,11 @@
-import scipy
-import numpy as np
-from scipy import interpolate
-import matplotlib
-from matplotlib import pyplot as plt
 import cv2
 import random
-from scipy.interpolate import CubicSpline
 import os
+import numpy as np
 from datetime import datetime
+from scipy.interpolate import CubicSpline
+from skimage.morphology import skeletonize
+from DataGenerator.correct_splines import correct_spline
 
 #Class Data Generator 
 #Task: Generates trainings images 
@@ -81,11 +79,16 @@ class data_gen:
             for x, y in k:
                 self.canvas[ int(y), x] = 255
 
-            cv2.imshow("Canvas", self.canvas)
+            cv2.imshow("non-continuous", self.canvas)
             cv2.waitKey(0)
+
+            img = correct_spline.thinning(self.canvas)
             
+            cv2.imshow("continuous", img*255)
+            cv2.waitKey(0)
+
             curr_time =  "\\" + datetime.now().strftime('%Y-%m-%d_%H_%M_%S') 
-            cv2.imwrite(self.cwd + curr_time + ".jpeg", self.canvas )
+            cv2.imwrite(self.cwd + curr_time + ".jpeg", img )
             #create a canvas width x height
             self.canvas = np.zeros((self.height, self.width), dtype="uint8")
 
