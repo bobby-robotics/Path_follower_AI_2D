@@ -18,7 +18,7 @@ import os
 
 # Bild einlesen
 original_img = cv2.imread(os.path.abspath('IMG/line1.jpg'))
-if img is None:
+if original_img is None:
     print('Fehler: Bild konte nicht eingelesen werden. Eventuell falscher Pfad oder Dateiname.')
     exit()
 

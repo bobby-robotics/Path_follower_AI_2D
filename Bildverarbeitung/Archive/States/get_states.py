@@ -97,6 +97,9 @@ while(1):
     k = cv2.waitKey(0) & 0xFF
     if k == ord('s'):
         break
+    if k == ord('q'):
+        cv2.destroyAllWindows()
+        exit()
 
 for i in range(len(states)):
     line_bgr[points[i][1]][points[i][0]] = (0, 0, 255)
