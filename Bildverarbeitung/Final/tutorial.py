@@ -7,7 +7,7 @@ Diese Pakete müssen installiert sein:
     scikit-image    (https://scikit-image.org/docs/stable/install.html)
 """
 
-import Line
+from Line import Line
 import cv2
 import os
 
@@ -16,7 +16,7 @@ import os
 # 1) Ein Bild einlesen.#
 ########################
 
-img = cv2.imread(os.path.abspath('IMG/line1.jpg'))
+img = cv2.imread(os.path.abspath('Bildverarbeitung/IMG/line1.jpg'))
 if img is None:
     print('Error: file could not be found or read.')
     exit()
@@ -45,6 +45,7 @@ if img is None:
 #############################################################
 
 points, states = Line.states(img, 20, 5)
+
 
 
 ########################################################
