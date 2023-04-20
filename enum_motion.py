@@ -7,4 +7,4 @@ class Moutions(Enum):
     LEFT = "a"
     RIGHT = "d"
     CLOCKWISE = "e"
-    CUNTERCLOCKWISE = "q"
+    COUNTERCLOCKWISE = "q"

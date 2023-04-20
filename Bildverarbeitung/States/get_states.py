@@ -3,6 +3,50 @@ import cv2
 import os
 from cv2 import WINDOW_NORMAL
 import numpy as np
+#import enum_motion
+#from enum_motion import Moutions
+
+
+def find_direction(delta_x, delta_y):
+
+    UP = "u"    
+    DOWN = "d"
+    LEFT = "l"
+    RIGHT = "r"
+    CLOCKWISE = "cw"
+    COUNTERCLOCKWISE = "ccw"
+
+    path = []
+
+    print(delta_x,delta_y)
+
+    if delta_x < 0:
+        path.append( LEFT)
+    
+    elif delta_x > 0:
+        path.append( RIGHT)
+
+    if delta_y < 0:
+        path.append( UP)
+
+    elif delta_y > 0:
+        path.append( DOWN)
+
+    if delta_x*delta_y != 0:
+
+        if  LEFT in path: 
+            if  DOWN in path:
+                path.append( COUNTERCLOCKWISE)
+            elif  UP in path:
+                path.append( CLOCKWISE)
+        elif  RIGHT in path:
+            if  UP in path:
+                path.append( COUNTERCLOCKWISE)
+            elif  DOWN in path:
+                path.append( CLOCKWISE)
+
+    return ','.join(path)
+
 
 START_X_COORDINATE = 20     # An dieser x-Koordinate wird der Startpunkt der Linie gesetzt
 STATE_DIMENSION = 7         # n*n*1 Array Bsp: 5x5 od 7x7 oder 9x9
@@ -10,7 +54,7 @@ points = []                 # Liste mit Pixelkoordinaten der Linie (sortiert von
 list = []                   # Nur für temporäre Verarbeitungsschritte notwendig
 states = []                 # States ist eine Liste mit Binären Bildern mit der Auflösung n*n wobei n = STATE_DIMENSION entspricht
 
-img = cv2.imread(os.path.abspath('IMG/line1.jpg'))
+img = cv2.imread(os.path.abspath('Bildverarbeitung/IMG/line1.jpg'))
 if img is None:
     print('Fehler: Bild konte nicht eingelesen werden. Eventuell falscher Pfad oder Dateiname.')
     exit()
@@ -98,7 +142,19 @@ while(1):
     if k == ord('s'):
         break
 
+path = []
+last_point = None
+
 for i in range(len(states)):
+
+
+    if last_point is not None:
+
+        delta_x = points[i][0] - last_point[0] 
+        delta_y = points[i][1] - last_point[1] 
+
+        path.append(find_direction(delta_x, delta_y))
+
     line_bgr[points[i][1]][points[i][0]] = (0, 0, 255)
     cv2.imshow('Line', line_bgr)
     cv2.imshow('States', states[i]*255)
@@ -106,5 +162,10 @@ for i in range(len(states)):
     if k == ord('q'):               # Taste q zum schließen
         cv2.destroyAllWindows()
         break
+
+    last_point = [ points[i][0], points[i][1]  ]
+
+print(','.join(path))
+
 
 cv2.destroyAllWindows()
