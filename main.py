@@ -1,6 +1,6 @@
 from DataGenerator.splines_generator import data_gen
-from DataGenerator.splines_generator import simple_spline
 from DataGenerator.fake_path_from_image import fake_path_from_image
+from Bildverarbeitung.Calibration.four_points_method import four_points_method
 import os
 import cv2
 
@@ -14,7 +14,13 @@ def main():
         print('Error: file could not be found or read.')
         exit()
 
-    print(fake_path_from_image.create_fake_path(img, 20, 5))
+    fpm = four_points_method()
+
+    
+
+    print(fpm.get_transform_from_pix_mm())
+
+    #print(fake_path_from_image.create_fake_path(img, 20, 5))
     
 
 if __name__ == '__main__':
