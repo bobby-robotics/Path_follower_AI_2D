@@ -9,8 +9,8 @@ class q_learning():
     states = None
     actions = None
 
-    iterations = 0
-    gamma = 0
+    #iterations = 0
+    #gamma = 0
 
     def __init__(self) -> None:
         pass
