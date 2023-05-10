@@ -2,9 +2,9 @@ from enum import Enum
 
 class Moutions(Enum):
 
-    UP = "w"    
-    DOWN = "s"
-    LEFT = "a"
-    RIGHT = "d"
-    CLOCKWISE = "e"
-    COUNTERCLOCKWISE = "q"
+    UP = "u"    
+    DOWN = "d"
+    LEFT = "l"
+    RIGHT = "r"
+    CLOCKWISE = "w"
+    COUNTERCLOCKWISE = "c"
