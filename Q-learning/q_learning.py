@@ -10,8 +10,8 @@ import numpy as np
 # gradualy decriesing over time
 # wtih value of 0.01 for every episode.
 #   
-
-
+#
+#
 
 class q_learning():
     
@@ -29,6 +29,8 @@ class q_learning():
 
     epsilon = 1
     delta = 0.01
+
+    reward = 0
 
     #iterations = 0
     #gamma = 0
@@ -76,7 +78,14 @@ class q_learning():
 
             action_vector[2] += 45
 
+        return action_vector
+
     def execute_action(self, action_nr):
+        
+        self.current_state += self.action_nr_to_vector(action_nr)
+        
+    def reward(self):
         pass
         
 
+    
