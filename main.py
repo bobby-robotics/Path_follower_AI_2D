@@ -17,7 +17,7 @@ def main():
 
     fpm = four_points_method()
 
-    frame = take_pic.get_pic()
+    frame = take_pic.get_pic(0) # get the taken pic/frame from the choosen webcam
 
     
 
