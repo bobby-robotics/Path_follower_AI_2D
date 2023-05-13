@@ -1,6 +1,7 @@
 from DataGenerator.splines_generator import data_gen
 from DataGenerator.fake_path_from_image import fake_path_from_image
 from Bildverarbeitung.Calibration.four_points_method import four_points_method
+from Bildverarbeitung.Final.take_pic import take_pic
 import os
 import cv2
 
@@ -15,6 +16,8 @@ def main():
         exit()
 
     fpm = four_points_method()
+
+    frame = take_pic.get_pic()
 
     
 
