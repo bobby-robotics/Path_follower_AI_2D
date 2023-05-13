@@ -12,7 +12,7 @@ class take_pic():
         cv2.imwrite(cwd + curr_time + ".jpeg", img )
 
     @staticmethod
-    def get_pic():
+    def get_pic(cam_nr):
 
         dec = 'y'
 
@@ -21,7 +21,7 @@ class take_pic():
             # Start capturing video from cam 0 aka 
             # laptop integraded webcam, or cam 1 aka 
             # external webcam
-            cap = cv2.VideoCapture(0)
+            cap = cv2.VideoCapture(cam_nr)
 
             # Check if capture is opened
             if cap.isOpened():
