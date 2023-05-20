@@ -16,7 +16,7 @@ class data_gen:
     num_of_data_imgs = 0
 
     #Number of points per spline
-    num_of_points = 0;
+    num_of_points = 0
 
     #X-Axis lenght (image width)
     width = 0
@@ -36,17 +36,27 @@ class data_gen:
     #current working directory
     cwd = None
 
+    # generated imgs
+    gen_imgs = []
+
+    # offset from the side
+    offset = None
+    
+    end_point_x = 530
+
 
     #Init defines the number of images, points per spline
     #and the lenght of the X-Axis
-    def __init__(self, num_of_data_imgs, num_of_points, width, height) -> None:
+    def __init__(self, num_of_data_imgs, num_of_points, width, height, offset) -> None:
         
         self.num_of_data_imgs = num_of_data_imgs
         self.num_of_points = num_of_points
         self.width = width
         self.height = height
+        self.offset = offset
 
-        self.x_axis_sep = np.linspace( 0, self.width, num = self.num_of_points )
+        
+        self.x_axis_sep = np.linspace( offset, self.end_point_x, num = self.num_of_points )
 
         cwd_ = os.getcwd
 
@@ -57,10 +67,11 @@ class data_gen:
     #Task: Generates Splines from points
     def splines_generator(self):
 
+
         #create a canvas width x height
         self.canvas = np.zeros((self.height, self.width), dtype="uint8")
 
-        x_axis_arr = np.arange(0, self.width, 1, dtype = "int")
+        x_axis_arr = np.arange(self.offset, self.end_point_x, 1, dtype = "int")
 
         #low and high range for the random nuber generator
         low = self.height/2 - self.height/4
@@ -72,12 +83,21 @@ class data_gen:
             #list of random numbers
             random_point = np.random.randint( low = low, high = high, size = self.num_of_points, dtype = int)
 
+            # height of the original loop starting/ending point
+            random_point[-1] = 289
+            random_point[0] = 289
+
             self.interpolation = CubicSpline(self.x_axis_sep, random_point)
 
             k = zip(x_axis_arr, self.interpolation(x_axis_arr))
 
             for x, y in k:
                 self.canvas[ int(y), x] = 255
+
+            y = random_point[0]
+            for i in range(0,self.offset):
+                self.canvas[y,i] = 255
+                self.canvas[y, i + self.end_point_x ] = 255
 
             cv2.imshow("non-continuous", self.canvas)
             cv2.waitKey(0)
@@ -87,78 +107,16 @@ class data_gen:
             cv2.imshow("continuous", img*255)
             cv2.waitKey(0)
 
-            curr_time =  "\\" + datetime.now().strftime('%Y-%m-%d_%H_%M_%S') 
-            cv2.imwrite(self.cwd + curr_time + ".jpeg", img )
+            self.gen_imgs.append(img)
+
             #create a canvas width x height
             self.canvas = np.zeros((self.height, self.width), dtype="uint8")
 
-# class simple_spline:
+    def save_gen_imgs(self):
 
-#     canvas = None 
-#     width = 0
-#     height = 0
+        for img in self.gen_imgs:
+            curr_time =  "\\" + datetime.now().strftime('%Y-%m-%d_%H_%M_%S') 
+            cv2.imwrite(self.cwd + curr_time + ".jpeg", img*255 )
 
-#     def __init__(self, width, height) -> None:
-
-#         self.width = width
-#         self.height = height
-
-#         self.canvas = np.zeros((height, width, 3), dtype="uint8")
-
-
-#     def draw_spline(self):
-        
-#         #cv2.imshow("Canvas", self.canvas)
-#         #cv2.waitKey(0)
-
-#         offset = 2
-
-        
-#         for i in range(0,5):
-
-#             pix_0 = np.random.randint(self.height/2 - self.height/4, self.height/2 + self.height/4, size = 1)[0]
-
-#             print(pix_0)
-#             self.canvas[pix_0, 0] = 255
-
-#             for i in range(1, self.width):
-                
-#                 #pix_0 = np.random.randint(pix_0 - offset, pix_0 + offset, size = 1)[0]
-#                 pix_0 = int(random.uniform(pix_0 - offset, pix_0 + offset))
-#                 print(pix_0)
-#                 if pix_0 <= 0.1*self.height:
-#                     pix_0 = pix_0 + offset
-#                     cv2.circle(self.canvas, (i, pix_0), 5, (128, 0, 255), 3)
-#                     cv2.circle(self.canvas, (i, pix_0), 1, (128, 0, 255), 3)
-#                 else:
-#                     self.canvas[pix_0, i] = 255
-
-                
-
-                
-#             cv2.imshow("Canvas", self.canvas)
-#             cv2.waitKey(0)
-
-#             self.canvas = np.zeros((self.height, self.width, 3), dtype="uint8")
-
-#     def quadratic_spline(self):
-        
-#             A = random.uniform(-5,5)
-#             B = random.uniform(-5,5)
-#             C = random.uniform(-5,5)
-
-#             pix_0 = int(A*pow(0, 2) + B*pow(0, 1) + C)
-
-#             self.canvas[pix_0, 0] = 255
-
-#             for i in range(1, self.height):
-
-#                 pix_0 = int(A*pow(i, 2) + B*pow(i, 1) + C)
-#                 print(pix_0)
-#                 self.canvas[pix_0, i] = 255
-
-                
-#             cv2.imshow("Canvas", self.canvas)
-#             cv2.waitKey(0)
-
-#             self.canvas = np.zeros((self.height, self.width, 3), dtype="uint8")
+    def get_gen_imgs(self):
+        return self.gen_imgs
