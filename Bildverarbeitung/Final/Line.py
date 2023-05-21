@@ -11,6 +11,7 @@ import cv2
 import numpy as np
 from skimage.morphology import skeletonize
 from cv2 import WINDOW_NORMAL
+import MotionCoordinates as mc
 
 
 class Line():
@@ -268,6 +269,8 @@ class Line():
             last_point = [ points[i][0], points[i][1]  ]
 
         cv2.destroyAllWindows()
+
+        mc.motionCoordinates(path)
 
         if withpath:
             return ','.join(path)
