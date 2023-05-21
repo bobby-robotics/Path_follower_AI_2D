@@ -57,25 +57,41 @@ class Line():
         return ','.join(path)
 
     @staticmethod
-    def detect(original_img):
+    def detect(original_img, generated = False):
+
 
         # Bild in Gray-Bild umwandeln
         img = cv2.cvtColor(original_img, cv2.COLOR_BGR2GRAY)
 
-        # Schwellwert anwenden
-        img = cv2.medianBlur(img, 3)
-        img = cv2.adaptiveThreshold(img, 255, cv2.ADAPTIVE_THRESH_GAUSSIAN_C, cv2.THRESH_BINARY_INV, 5, 2)
+        
 
+        if generated:
+            pass
+        else:
+            # Schwellwert anwenden
+            img = cv2.medianBlur(img, 3)
+            img = cv2.adaptiveThreshold(img, 255, cv2.ADAPTIVE_THRESH_GAUSSIAN_C, cv2.THRESH_BINARY_INV, 5, 2)
+
+        height,width = img.shape
+
+        # cut the top part of the img
+        img[ : 100, :width] = 0
+        
         # Konturen im Bild finden
         contours, hierarchy = cv2.findContours(img, cv2.RETR_TREE, cv2.CHAIN_APPROX_SIMPLE)
+
+       
 
         # Nach der größten Kontur filtern und diese auf ein schwarzes Bild übertragen
         img_line = np.zeros(img.shape, dtype="uint8")
         line = max(contours, key=cv2.contourArea)
         cv2.drawContours(img_line, [line], -1, 255, 5)
-
+        
         # Skeletonize-Methode anwenden um die Linie auf einen Pixel Breite zu reduzieren
         new_img = skeletonize(img_line)
+
+        # cv2.imshow("",new_img.astype(np.uint8)*255)
+        # cv2.waitKey(0)
 
         # Ergebnis in ein binäres Bild übertragen
         new_img_2 = np.zeros(img.shape, dtype="uint8")
@@ -89,14 +105,18 @@ class Line():
         return new_img_2
 
     @staticmethod
-    def states(img, START_X_COORDINATE:int, STATE_DIMENSION:int):
+    def states(img, START_X_COORDINATE:int, STATE_DIMENSION:int, generated = False, ss_only = False):
 
         points = []
         states = []
         list = []
 
+        height = None
+        width = None
+
+
         if len(img.shape) == 3:
-            line = Line.detect(img)
+            line = Line.detect(img,generated)
         elif len(img.shape) == 2:
             line = img
         else:
@@ -108,7 +128,6 @@ class Line():
             exit()
         
         height, width = line.shape
-
 
         # Startpunkt finden (Spalte gegeben)
         count = 0
@@ -123,40 +142,48 @@ class Line():
 
         print('STATUS: get start point done')
 
-
-        # Alle Punkte der Linie in ein Array speichern
-        for x in range(width):
-            if x < START_X_COORDINATE:
-                continue
-            for y in range(height):
-                if line[y][x] == 1:
-                    list.append([x, y, 0]);
-
-        print('STATUS: list points done')
-
-
-        # Punkte sortieren
-        while(len(list) > 0):
-            for index in range(len(list)):
-                list[index][2] = (points[-1][0]-list[index][0])**2 + (points[-1][1]-list[index][1])**2
-
-            def sortKey(val):
-                return val[2]
-            list.sort(key=sortKey)
-
-            points.append((list[0][0], list[0][1]))
-            list.pop(0)
-
-        print('STATUS: sort points done')
-
-
-        # States abgreifen
-        for point in points:
+        if ss_only:
+            point = points[0]
             y1 = point[1] - int(STATE_DIMENSION/2)
             y2 = point[1] + int(STATE_DIMENSION/2) +1
             x1 = point[0] - int(STATE_DIMENSION/2)
             x2 = point[0] + int(STATE_DIMENSION/2) +1
             states.append(line[y1:y2, x1:x2])
+
+        else:
+            # Alle Punkte der Linie in ein Array speichern
+            for x in range(width):
+                if x < START_X_COORDINATE:
+                    continue
+                for y in range(height):
+                    if line[y][x] == 1:
+                        list.append([x, y, 0]);
+
+            print('STATUS: list points done')
+
+
+            # Punkte sortieren
+            while(len(list) > 0):
+                for index in range(len(list)):
+                    list[index][2] = (points[-1][0]-list[index][0])**2 + (points[-1][1]-list[index][1])**2
+
+                def sortKey(val):
+                    return val[2]
+                list.sort(key=sortKey)
+
+                points.append((list[0][0], list[0][1]))
+                list.pop(0)
+
+            print('STATUS: sort points done')
+
+
+            # States abgreifen
+            for point in points:
+                y1 = point[1] - int(STATE_DIMENSION/2)
+                y2 = point[1] + int(STATE_DIMENSION/2) +1
+                x1 = point[0] - int(STATE_DIMENSION/2)
+                x2 = point[0] + int(STATE_DIMENSION/2) +1
+                states.append(line[y1:y2, x1:x2])
 
         
         return points, states
