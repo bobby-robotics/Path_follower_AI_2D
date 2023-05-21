@@ -99,13 +99,13 @@ class data_gen:
                 self.canvas[y,i] = 255
                 self.canvas[y, i + self.end_point_x ] = 255
 
-            cv2.imshow("non-continuous", self.canvas)
-            cv2.waitKey(0)
+            # cv2.imshow("non-continuous", self.canvas)
+            # cv2.waitKey(0)
 
             img = correct_spline.thinning(self.canvas)
             
-            cv2.imshow("continuous", img*255)
-            cv2.waitKey(0)
+            # cv2.imshow("continuous", img*255)
+            # cv2.waitKey(1000)
 
             self.gen_imgs.append(img)
 
