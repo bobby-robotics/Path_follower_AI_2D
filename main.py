@@ -6,7 +6,7 @@ import os
 import cv2
 import numpy as np
 from math import sin,cos, pi,sqrt
-from enum_motion import Moutions
+from enum_motion import Motions
 from cv2 import WINDOW_NORMAL
 from Q_learning.training import training
 
@@ -105,7 +105,7 @@ def test_pix_mm():
 
 def main():
 
-    t = training(500,20)
+    t = training(10,20, True)
 
     t.start_training()    
 
