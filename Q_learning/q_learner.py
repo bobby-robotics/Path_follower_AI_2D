@@ -4,10 +4,10 @@ import pandas as pd
 import os
 from Q_learning.state import state
 from Q_learning.eviroment import enviroment
-from enum_motion import Moutions
+from enum_motion import Motions
 import cv2
 from cv2 import WINDOW_NORMAL
-
+import time
 from math import sin,cos, pi
 
 #*************************************
@@ -35,17 +35,14 @@ class q_learner():
     epsilon = 1
     delta = 0.01
     state = None
+    visualise = None
 
-    def __init__(self) -> None:
-
+    def __init__(self, visualise) -> None:
         self.file = os.getcwd() + "/Q_learning/q_table.csv"
-
         self.import_q_table()
-        np.random.seed(9001)
 
+        self.visualise = visualise
 
-
-        #print(self.state.get_state()[0],"\n", self.state.get_state()[1])
 
     def init_params(self, img, initial_tcp, initial_img_matrix):
 
@@ -85,7 +82,7 @@ class q_learner():
     def init_new_state(self):
         
         dict_key = hash(self.state)
-        self.q_table[dict_key] = np.zeros(len(Moutions))
+        self.q_table[dict_key] = np.zeros(len(Motions))
 
     def state_existance(self):
         
@@ -101,46 +98,25 @@ class q_learner():
 
             # if random probability smaller than epsilon 
             # agent should choose a random action     
-            return np.random.randint(0, len(Moutions) - 1)
+            return np.random.randint(0, len(Motions) - 1)
         
         else:
             # agent is now taking 
             # the best known action Q(s,a)
             return np.argmax(self.q_table.get(hash(self.state)))
-            # hashed_state = self.__hash__()
-
-            # if hashed_state in self.q_table:
-            #     # agent is now taking 
-            #     # the best known action Q(s,a)
-            #     return np.argmax(self.q_table.get(hashed_state))
-            
-            # else:
-
-            #     return np.random.randint(low = 0, high = len(Moutions), size = 1, dtype = "int16" )[0] #self.choose_action()
     
     def greedy_exploration(self):
 
-        alpha = 0.5
-        gamma = 0.5
-        Ne = 100
+        alpha = 0.8
+        gamma = 0.8
+        Ne = 1000
 
-        Nc = 1000
-
-        # d = {1 :["one","one","one"], 2: "two"}   
-        # ne = d.get(1)
-        # ne[1] = "Three"
-        # ml = {1 : ne}
-        # d.update(ml)
-        # print(d.get(1))
+        Nc = 500
 
         env = None
 
-        cv2.namedWindow('tcp', WINDOW_NORMAL)
-        cv2.resizeWindow('tcp', 500,500)
-
-        cv2.namedWindow('wire', WINDOW_NORMAL)
-        cv2.resizeWindow('wire', 500,500)
-
+        np.random.seed(42)
+        
         # cv2.imshow("img_2",img_2)
         # cv2.waitKey(0)
         
@@ -149,39 +125,30 @@ class q_learner():
         for nc in range(Nc):
 
             if nc == 0:
-                env = enviroment(self.img, self.state.get_tcp_xy(),self.state)
+                env = enviroment(self.img, self.state.get_tcp_xy())
             else:
-                self.state.set_state(last_stable_state.get_state())
-                env = enviroment(self.img, self.state.get_tcp_xy(),self.state)
+                self.state.set_state(last_stable_state)
+                env = enviroment(self.img, self.state.get_tcp_xy())
+
+            # init enviroment
+            # either with the starting state or
+            # the last legit state
+            # see under for collision check
+            #env = enviroment(self.img, self.state.get_tcp_xy())
 
             for i in range(Ne):
             
                 self.state_existance()
-
                 a = self.choose_action()
-
-                tcp = np.array(self.state.get_tcp_xy()).astype(int)
-
-                cv2.imshow("wire", self.state.get_state()[0])
-                cv2.imshow("tcp", self.state.get_state()[1])
-                cv2.waitKey(50)
-
                 s = hash(self.state)
-                # print(s)
+                row = self.q_table.get(s)
 
-                self.state.set_state(env.update_state(a))
+                self.state.set_state(env.update_state(a, self.state, self.visualise))
 
                 s_prim = hash(self.state)
-
                 self.state_existance()
 
-                r = env.get_reward()
-                print("Reward:" , r)
-
-                if abs(r) > 50:
-                    break
-
-                row = self.q_table.get(s)
+                r, col, wire = env.get_reward(self.state)
 
                 row_prim = self.q_table.get(s_prim)
 
@@ -192,14 +159,35 @@ class q_learner():
                 if self.epsilon > 0.0:
                     self.epsilon -= 1/Ne
 
-                wire = np.where(self.state.get_state()[0])
-                wire = np.asarray(wire).transpose()
-                #print(wire)
-                if len(wire) < 5:
-                    print("No Wire There!")
+                if abs(r) > 1000:
                     break
 
+                print("Reward:" , r)
+                # if collision detected, set back to 
+                if col:
+                    print("\nCollision:",col)
+                    last_stable_state = env.get_last_legit_state()
+                    self.state.set_state(env.get_last_legit_state())
+                    break
+                elif wire:
+                    print("\nWire Detectec:",wire)
+                    last_stable_state = env.get_last_legit_state()
+                    self.state.set_state(env.get_last_legit_state())
+                    break
+
+
+                #time.sleep(5)
+                # wire = np.where(self.state.get_state()[0])
+                # wire = np.asarray(wire).transpose()
+
+                # if len(wire) < 5:
+                #     print("No Wire There!")
+                #     break
+
                 last_stable_state = copy.deepcopy(self.state)
+
+            print("init env one more time")
+            self.epsilon = 1# - 1/Nc
 
 
 
