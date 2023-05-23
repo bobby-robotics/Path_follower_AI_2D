@@ -1,6 +1,6 @@
 from enum import Enum
 
-class Moutions(Enum):
+class Motions(Enum):
 
     u = 0 #UP =                  
     d = 1 #DOWN =            
