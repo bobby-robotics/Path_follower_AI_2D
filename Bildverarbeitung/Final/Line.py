@@ -11,7 +11,7 @@ import cv2
 import numpy as np
 from skimage.morphology import skeletonize
 from cv2 import WINDOW_NORMAL
-import MotionCoordinates as mc
+from Bildverarbeitung.Final import MotionCoordinates as mc
 
 
 class Line():
