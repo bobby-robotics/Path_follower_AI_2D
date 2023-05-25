@@ -9,6 +9,7 @@ from math import sin,cos, pi,sqrt
 from enum_motion import Motions
 from cv2 import WINDOW_NORMAL
 from Q_learning.training import training
+import time 
 
 def test_rotation():
     alpha = -(-45)*pi/180
@@ -102,14 +103,27 @@ def test_pix_mm():
 
     print(fpm.get_transform_from_pix_mm())
 
+def test_randomness():
+    print(len(Motions) - 1)
+    i = 0
+    np.random.seed(13)#[42,1,3,56,2,7,1,23,5,16,8,3,3,21,3])
+    while (np.random.randint(0, len(Motions) ) != 5 ):
+        print(i)
+        i+=1
+        #time.sleep(1)
+        #np.random.seed(np.random.randint(0, len(Motions) ))
+    time.sleep(1)
+    while (np.random.randint(0, len(Motions) ) != 5 ):
+        print(i)
+        i+=1
 
 def main():
 
-    t = training(10,20, True)
+    t = training(20,20, True)
 
     t.start_training()    
+    #print(np.array(5))
 
-    
 
 if __name__ == '__main__':
     main()

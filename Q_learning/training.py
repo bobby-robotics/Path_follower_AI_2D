@@ -32,7 +32,7 @@ class training():
 
             point = np.where(img[:,self.offset] == 1)
             point = np.asarray(point).transpose()
-            print(point)
+            #print(point)
 
             y1 = point[0][0] - 2
             y2 = point[0][0] + 3
