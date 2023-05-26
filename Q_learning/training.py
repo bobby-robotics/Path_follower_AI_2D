@@ -10,8 +10,9 @@ class training():
     ps = []
     mats = []
     offset = None
+    visualise = None
 
-    def __init__(self,amount_of_imgs, offset) -> None:
+    def __init__(self,amount_of_imgs, offset, visualise = False) -> None:
         # Generate Data
         data = data_gen( amount_of_imgs, 4, 640, 480,offset + 2)
         data.splines_generator()
@@ -20,23 +21,23 @@ class training():
 
         self.offset = offset
 
+        self.visualise = visualise
+
     def start_training(self):
         
         # init q learner
-        q = q_learner() 
+        q = q_learner(self.visualise) 
 
         for img in self.imgs:
 
-            # cv2.imshow("just learned img", img*255)
-            # cv2.waitKey(1000)
             point = np.where(img[:,self.offset] == 1)
             point = np.asarray(point).transpose()
-            print(point)
+            #print(point)
 
-            y1 = point[0][0] - int(5/2)
-            y2 = point[0][0] + int(5/2) +1 
-            x1 = self.offset - int(5/2) 
-            x2 = self.offset + int(5/2) +1 
+            y1 = point[0][0] - 2
+            y2 = point[0][0] + 3
+            x1 = self.offset - 2 
+            x2 = self.offset + 3 
 
             matrix = img[y1:y2, x1:x2]
 
@@ -48,8 +49,6 @@ class training():
 
             q.greedy_exploration()
 
-            # cv2.imshow("just learned img", img)
-            # cv2.waitKey(1000)
 
         q.export_q_tabel()
             

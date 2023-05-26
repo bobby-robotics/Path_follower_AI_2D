@@ -1,10 +1,10 @@
 from enum import Enum
 
-class Moutions(Enum):
+class Motions(Enum):
 
-    u = 0 #UP =                  
-    d = 1 #DOWN =            
-    l = 2 #LEFT =            
-    r = 3 #RIGHT =           
-    w = 4 #CLOCKWISE =       
-    c = 5 #COUNTERCLOCKWISE =
+    r = 0 #RIGHT           
+    l = 1 #LEFT           
+    u = 2 #UP                  
+    d = 3 #DOWN            
+    c = 4 #CLOCKWISE       
+    w = 5 #COUNTERCLOCKWISE
