@@ -7,7 +7,7 @@ import socket
 import subprocess
 
 # IP-Adresse & Port für Server
-Host = '123.0.0.1'  # Hostname eingeben
+Host = '127.0.0.1'  # IP-Adresse von Rechner eingeben auf dem der Server laufen soll
 Port = 12345        # Portname eingeben
 
 # Führt Befehl auf Server aus und gibt Ergebnis zurück
@@ -17,7 +17,7 @@ def run_command(command):
 
 # Socket initialisieren
 # Auf mögliche Verbindungen warten
-server_socket = socket.socket(socket.AF_INET, socket.SOCK.STREAM)
+server_socket = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
 server_socket.bind((Host, Port))
 server_socket.listen(1)
 
