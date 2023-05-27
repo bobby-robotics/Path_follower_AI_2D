@@ -6,7 +6,7 @@
 import socket
 
 # IP-Adresse und Port für Server
-Host = '127.0.0.1'  # Hostname eingeben
+Host = '127.0.0.1'  # IP-Adresse von Server eingeben
 Port = 12345        # Portname eingeben
 
 # Befehl der auf dem Server ausgeführt werden soll
