@@ -6,6 +6,9 @@ import os
 import cv2
 import numpy as np
 from math import sin,cos, pi,sqrt
+
+from XMLParser.StringCompressionAndSplitting import StringCompressionAndSplitting
+from XMLParser.XMLParser import XMLParser
 from enum_motion import Motions
 from cv2 import WINDOW_NORMAL
 from Q_learning.training import training
@@ -119,11 +122,19 @@ def test_randomness():
 
 def main():
 
-    t = training(20,20, True)
+    teststring = "rrrrdrdrddrcrdrcdrcrrrrwrrwurrwrurrrrruuuuwrrrururruuuuuwwuuuuulullluuuucuuuwuwrururrrrrrrrrdrdrddrcrdrcdrcrrrrwrrwurrwrurrrrruuuuwrrrururruuuuuwwuuuuulullluuuucuuuwuwrururrrrrrrrrdrdrddrcrdrcdrcrrrrwrrwurrwrurrrrruuuuwrrrururruuuuuwwuuuuulullluuuucuuuwuwrururrrrrrrrrdrdrddrcrdrcdrcrrrrwrrwurrwrurrrrruuuuwrrrururruuuuuwwuuuuulullluuuucuuuwuwrururrrrrrrrrdrdrddrcrdrcdrcrrrrwrrwurrwrurrrrruuuuwrrrururruuuuuwwuuuuulullluuuucuuuwuwrururrrrrrrrrdrdrddrcrdrcdrcrrrrwrrwurrwrurrrrruuuuwrrrururruuuuuwwuuuuulullluuuucuuuwuwrururrrrr"
 
-    t.start_training()    
+    #t = training(20,20, True)
+
+    #t.start_training()
     #print(np.array(5))
+    compressedTest = StringCompressionAndSplitting.CompressString(teststring)
+    print("!!" + compressedTest)
 
+    splittedTest = StringCompressionAndSplitting.splitString(compressedTest)
+    print(splittedTest)
+
+    XMLParser.parseToXML("")
 
 if __name__ == '__main__':
     main()
