@@ -3,7 +3,7 @@ teststring = "rrrrdrdrddrcrdrcdrcrrrrwrrwurrwrurrrrruuuuwrrrururruuuuuwwuuuuulul
 class StringCompressionAndSplitting():
 
     @staticmethod
-    def CompressString(string):
+    def compressString(string):
         input = string
         compressed = ""
         counter = 1
@@ -33,4 +33,9 @@ class StringCompressionAndSplitting():
             splitted.append(sub)
 
         return splitted
+
+    @staticmethod
+    def compressAndSplit(string):
+
+        return StringCompressionAndSplitting.splitString(StringCompressionAndSplitting.compressString(string))
 

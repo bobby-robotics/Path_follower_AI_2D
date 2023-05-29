@@ -14,19 +14,14 @@ class XMLParser:
         target = ET.SubElement(root, "target")
         target.text = "Start"
 
-        if not string == "":
+        seq = ET.SubElement(root, "seq")
+        seqList = []
 
-            seq = ET.SubElement(root, "seq")
-            seqList = []
+        if len(string) > 0:
 
             for s in range(1, len(string)+1):
                 seqList.append(ET.SubElement(seq, "s" + "{:02d}".format(s)))
                 seqList[s-1].text = string[s-1]
-
-
-
-
-        #check directory
 
         cwd = os.getcwd
 
@@ -34,5 +29,6 @@ class XMLParser:
         if not os.path.exists(cwd):
             os.makedirs(cwd)
 
-        tree.write(cwd + "message" + datetime.now().strftime('%Y-%m-%d_%H_%M_%S') + ".xml", encoding="utf-8", xml_declaration=True)
+        tree.write(cwd + "message.xml", encoding="utf-8", xml_declaration=True)
+
 

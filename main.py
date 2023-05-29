@@ -128,13 +128,9 @@ def main():
 
     #t.start_training()
     #print(np.array(5))
-    compressedTest = StringCompressionAndSplitting.CompressString(teststring)
-    print("!!" + compressedTest)
 
-    splittedTest = StringCompressionAndSplitting.splitString(compressedTest)
-    print(splittedTest)
-
-    XMLParser.parseToXML("")
+    splitted = StringCompressionAndSplitting.compressAndSplit(teststring)
+    XMLParser.parseToXML(splitted)
 
 if __name__ == '__main__':
     main()
