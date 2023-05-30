@@ -16,7 +16,7 @@ class training():
         # Generate Data
         data = data_gen( amount_of_imgs, 4, 640, 480,offset + 2)
         data.splines_generator()
-        data.save_gen_imgs()
+        #data.save_gen_imgs()
         self.imgs = data.get_gen_imgs()
 
         self.offset = offset
@@ -47,7 +47,7 @@ class training():
             #print(self.offset, point[0][0])
             q.init_params(img, (self.offset, point[0][0]), matrix)
 
-            q.greedy_exploration()
+            q.greedy_exploration(self.offset)
 
 
         q.export_q_tabel()

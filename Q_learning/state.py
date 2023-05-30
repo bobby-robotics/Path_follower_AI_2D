@@ -22,6 +22,9 @@ class state():
     def get_tcp_xy(self) -> np.array:
         return np.array([self.current_state[1][2,2], self.current_state[1][2,3]])
     
+    def get_orientation(self):
+        return self.current_state[1][0,4]
+
     def get_state(self):
         return self.current_state
     

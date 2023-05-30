@@ -105,41 +105,40 @@ class q_learner():
             # the best known action Q(s,a)
             return np.argmax(self.q_table.get(hash(self.state)))
     
-    def greedy_exploration(self):
+    def greedy_exploration(self,offset):
 
-        alpha = 0.3
-        gamma = 0.3
-        Ne = 1000
+        alpha = 0.2
+        gamma = 0.8
+        Ne = 500
 
-        Nc = 500
+        Nc = 1000
 
         env = None
-        side = False
-        wire_not_det = False
+        target_tcp = None
+
+        targets = []
+
+        wire  = np.where(self.img[:,:offset + 1] == 1)
+        wire = np.asarray(wire).transpose()
+        # print(wire)
+
+        for w in wire:
+            targets.append( hash(tuple(np.array([ w[1], w[0]]) )))
 
         np.random.seed(42)
-        
-        # cv2.imshow("img_2",img_2)
-        # cv2.waitKey(0)
         
         last_stable_state = None
 
         for nc in range(Nc):
 
             if nc == 0:
-                env = enviroment(self.img, self.state.get_tcp_xy())
-            # elif side:
-            #     env = enviroment(self.img, env.get_init_tcp())
-            #     side = False
+                env = enviroment(self.img, targets=targets,visualise=self.visualise)
             else:
-                self.state.set_state(last_stable_state)
-                env = enviroment(self.img, self.state.get_tcp_xy())
+                #self.state.set_state(last_stable_state)
+                #print(self.state.get_tcp_xy())
+                print("init env one more time")
+                env = enviroment(self.img, target_tcp, targets, visualise=self.visualise, last_legit_state = self.state.get_state())
 
-            # init enviroment
-            # either with the starting state or
-            # the last legit state
-            # see under for collision check
-            #env = enviroment(self.img, self.state.get_tcp_xy())
 
             for i in range(Ne):
                 
@@ -153,48 +152,42 @@ class q_learner():
                 s_prim = hash(self.state)
                 self.state_existance()
 
-                r, col, wire_not_det = env.get_reward(self.state,a)
+                r, col = env.get_reward(self.state,a)
 
                 row_prim = self.q_table.get(s_prim)
 
                 row[a] = row[a] + alpha*( r + gamma*row_prim[np.argmax(self.q_table.get(hash(self.state)))] - row[a])
 
                 self.q_table.update( {s : row} )
+               
 
                 if self.epsilon > 0.0:
                     self.epsilon -= 1/100
-
-                # if abs(r) > 100 and col:
-                #     side = True
-                #     break
 
                 print("Reward:" , r)
                 # if collision detected, set back to 
                 if col:
                     print("\nCollision:",col)
+                    #target_tcp = env.get_last_target()
+                    #targets = env.get_targets()
                     # time.sleep(3)
-                    last_stable_state = env.get_last_legit_state()
-                    self.state.set_state(env.get_last_legit_state())
+                    #last_stable_state = env.get_last_legit_state()
+                    #self.state.set_state(env.get_last_legit_state())
                     break
-                # elif wire_not_det:
-                #     print("\nWire Detectec:",wire_not_det)
-                #     # last_stable_state = env.get_last_legit_state()
-                #     # self.state.set_state(env.get_last_legit_state())
-                #     break
+                
+                # if r == 10:
+                #     print("Problem")
+                #     self.state.set_state(env.get_last_legit_state())
 
+                #last_stable_state = copy.deepcopy(self.state.get_state())
+                # target_tcp = env.get_last_target()
+                # targets = env.get_targets()
 
-                #time.sleep(5)
-                # wire = np.where(self.state.get_state()[0])
-                # wire = np.asarray(wire).transpose()
-
-                # if len(wire) < 5:
-                #     print("No Wire There!")
-                #     break
-
-                last_stable_state = copy.deepcopy(self.state)
-                #time.sleep(3)
-
-            print("init env one more time")
+            # take last stable state
+            self.state.set_state( env.get_last_legit_state() )
+            target_tcp = env.get_last_target()
+            targets = env.get_targets()
+            
             self.epsilon = 1# - 1/Nc
 
 
