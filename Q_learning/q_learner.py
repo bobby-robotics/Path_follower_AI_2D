@@ -36,6 +36,7 @@ class q_learner():
     #delta = 0.01
     state = None
     visualise = None
+    last_target = None
 
     def __init__(self, visualise) -> None:
         self.file = os.getcwd() + "/Q_learning/q_table.csv"
@@ -44,7 +45,7 @@ class q_learner():
         self.visualise = visualise
 
 
-    def init_params(self, img, initial_tcp, initial_img_matrix):
+    def init_params(self, img, initial_tcp, initial_img_matrix, last_target):
 
         self.img = img
 
@@ -58,6 +59,8 @@ class q_learner():
         initial_state = np.array([initial_img_matrix, tool_def])
 
         self.state = state(initial_state)
+
+        self.last_target = last_target
 
     def import_q_table(self):
 
@@ -109,12 +112,13 @@ class q_learner():
 
         alpha = 0.2
         gamma = 0.8
-        Ne = 500
+        Ne = 550
 
         Nc = 1000
 
         env = None
         target_tcp = None
+        end = False
 
         targets = []
 
@@ -168,33 +172,19 @@ class q_learner():
                 # if collision detected, set back to 
                 if col:
                     print("\nCollision:",col)
-                    #target_tcp = env.get_last_target()
-                    #targets = env.get_targets()
-                    # time.sleep(3)
-                    #last_stable_state = env.get_last_legit_state()
-                    #self.state.set_state(env.get_last_legit_state())
                     break
                 
-                # if r == 10:
-                #     print("Problem")
-                #     self.state.set_state(env.get_last_legit_state())
+                if self.state.get_tcp_xy()[0] == self.last_target[0] and self.state.get_tcp_xy()[1] == self.last_target[1]:
+                    end = True
 
-                #last_stable_state = copy.deepcopy(self.state.get_state())
-                # target_tcp = env.get_last_target()
-                # targets = env.get_targets()
+            if end:
+                break
 
             # take last stable state
             self.state.set_state( env.get_last_legit_state() )
             target_tcp = env.get_last_target()
             targets = env.get_targets()
             
-            self.epsilon = 1# - 1/Nc
-
-
-
-
-
-
-        
+            self.epsilon = 1 - 1/Nc
    
     
