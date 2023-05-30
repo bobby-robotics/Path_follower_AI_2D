@@ -29,8 +29,8 @@ class enviroment():
         self.targets = targets
 
         self.last_legit_state = copy.deepcopy(last_legit_state)
-        if last_legit_state is not None:
-            print(self.last_legit_state[1])
+        # if last_legit_state is not None:
+        #     print(self.last_legit_state[1])
 
         if visualise:
             self.img_2 = cv2.cvtColor(self.img*255, cv2.COLOR_GRAY2BGR)
@@ -130,7 +130,7 @@ class enviroment():
             self.tcp_on_target = False
             self.find_target(state)
             self.last_legit_state = copy.deepcopy(state.get_state())
-            print(state.get_state()[1])
+            # print(state.get_state()[1])
             #time.sleep(5)
 
         if visualise:
