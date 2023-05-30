@@ -3,6 +3,7 @@ from Bildverarbeitung.Final.Line import Line
 from Q_learning.q_learner import q_learner
 import numpy as np
 import cv2
+from cv2 import WINDOW_NORMAL
 
 class training():
 
@@ -41,13 +42,15 @@ class training():
 
             matrix = img[y1:y2, x1:x2]
 
-            #print(matrix)
+            # last target
+            point2 = np.where(img[:,535] == 1)
+            point2 = np.asarray(point).transpose()
 
-            # ps, mats = Line.states(img, 20, 5,ss_only=True)
-            #print(self.offset, point[0][0])
-            q.init_params(img, (self.offset, point[0][0]), matrix)
+            q.init_params(img, (self.offset, point[0][0]), matrix, np.array( [535, point2[0][0]] ))
 
             q.greedy_exploration(self.offset)
+
+            # img_now = np.zeros((264,264),dtype=int)
 
 
         q.export_q_tabel()
