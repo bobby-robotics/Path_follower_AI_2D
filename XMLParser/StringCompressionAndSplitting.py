@@ -12,10 +12,12 @@ class StringCompressionAndSplitting():
             if input[i] == input[i+1]:
                 counter += 1
             else:
-                if counter > 1:
-                    degrees = 1
-                    if input[i] == "c" or input[i] == "w":
-                        degrees = 45
+                degrees = 1
+                if input[i] == "c" or input[i] == "w":  # noch anpassen, da bei counter < 1 dies nicht passiert
+                    degrees = 45
+
+                if counter * degrees > 1:
+
                     compressed += str(counter * degrees)
                 compressed += input[i]
                 counter = 1
