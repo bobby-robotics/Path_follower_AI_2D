@@ -1,5 +1,6 @@
 from enum_motion import Motions
 import numpy as np
+from Q_learning.enum_rewards import rewards
 # from Q_learning.state import state
 from math import sin,cos, pi, sqrt
 import cv2
@@ -35,13 +36,13 @@ class enviroment():
         if visualise:
             self.img_2 = cv2.cvtColor(self.img*255, cv2.COLOR_GRAY2BGR)
 
-            cv2.namedWindow('s_tcp', WINDOW_NORMAL)
-            cv2.resizeWindow('s_tcp', 400,400)
+            # cv2.namedWindow('s_tcp', WINDOW_NORMAL)
+            # cv2.resizeWindow('s_tcp', 400,400)
             cv2.namedWindow('s_p_tcp', WINDOW_NORMAL)
             cv2.resizeWindow('s_p_tcp', 400,400)
 
-            cv2.namedWindow('s_wire', WINDOW_NORMAL)
-            cv2.resizeWindow('s_wire', 400,400)
+            # cv2.namedWindow('s_wire', WINDOW_NORMAL)
+            # cv2.resizeWindow('s_wire', 400,400)
             cv2.namedWindow('s_p_wire', WINDOW_NORMAL)
             cv2.resizeWindow('s_p_wire', 400,400)
 
@@ -119,7 +120,7 @@ class enviroment():
     def get_targets(self):
         return self.targets
 
-    def update_state(self, action_nr, state, visualise):
+    def update_state(self, action_nr, state, visualise , optimal_policy):
         
         #self.last_legit_state = copy.deepcopy(state.get_state())
 
@@ -133,9 +134,9 @@ class enviroment():
             # print(state.get_state()[1])
             #time.sleep(5)
 
-        if visualise:
-            cv2.imshow("s_wire", state.get_state()[0])
-            cv2.imshow("s_tcp", state.get_state()[1])
+        # if visualise:
+        #     cv2.imshow("s_wire", state.get_state()[0])
+        #     cv2.imshow("s_tcp", state.get_state()[1])
 
         action_vector = self.action_nr_to_vector(action_nr)
 
@@ -156,9 +157,9 @@ class enviroment():
            
         temp_state[0] = self.img[y1:y2, x1:x2]
 
-        temp_state[1][2,2] += action_vector[0]
-        temp_state[1][2,3] += action_vector[1] 
-        temp_state[1][0,4] += action_vector[2]
+        temp_state[1][2,2] += int(action_vector[0])
+        temp_state[1][2,3] += int(action_vector[1]) 
+        temp_state[1][0,4] += int(action_vector[2])
 
         temp_state = self.rotate_translate(temp_state, action_vector[2])
 
@@ -167,6 +168,8 @@ class enviroment():
             cv2.imshow("s_p_wire", state.get_state()[0])
             cv2.imshow("s_p_tcp", state.get_state()[1])
             cv2.imshow("enviroment",self.img_2)
+            if optimal_policy:
+                cv2.putText(img=self.img_2, text='Execution: taking optimal policy', org=(20, 40), fontFace=cv2.FONT_HERSHEY_TRIPLEX, fontScale=1, color=(0, 255, 0),thickness=1)
             cv2.waitKey(20)
 
         return copy.copy(temp_state)
@@ -264,19 +267,20 @@ class enviroment():
 
         if len(wire) < 3:
             print("No Wire There!")
+            time.sleep(1000)
             exit()
 
         elif col:
-            reward -= 100
+            reward -= rewards.COLLISION.value
 
         else: 
             tcp = state.get_tcp_xy()
             if tcp[0] == self.target_tcp[0] and tcp[1] == self.target_tcp[1]:
                 self.tcp_on_target = True
-                reward += 100
+                reward += rewards.PASSED.value
 
             else:
-                reward += 10
+                reward += rewards.NO_PROGRESS.value
 
         return reward, col
 
