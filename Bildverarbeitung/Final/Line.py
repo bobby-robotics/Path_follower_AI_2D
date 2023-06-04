@@ -58,20 +58,15 @@ class Line():
         return ','.join(path)
 
     @staticmethod
-    def detect(original_img, generated = False):
-
+    def detect(original_img):
 
         # Bild in Gray-Bild umwandeln
         img = cv2.cvtColor(original_img, cv2.COLOR_BGR2GRAY)
 
         
-
-        if generated:
-            pass
-        else:
-            # Schwellwert anwenden
-            img = cv2.medianBlur(img, 3)
-            img = cv2.adaptiveThreshold(img, 255, cv2.ADAPTIVE_THRESH_GAUSSIAN_C, cv2.THRESH_BINARY_INV, 5, 2)
+        # Schwellwert anwenden
+        img = cv2.medianBlur(img, 3)
+        img = cv2.adaptiveThreshold(img, 255, cv2.ADAPTIVE_THRESH_GAUSSIAN_C, cv2.THRESH_BINARY_INV, 5, 2)
 
         height,width = img.shape
 
@@ -81,8 +76,6 @@ class Line():
         # Konturen im Bild finden
         contours, hierarchy = cv2.findContours(img, cv2.RETR_TREE, cv2.CHAIN_APPROX_SIMPLE)
 
-       
-
         # Nach der größten Kontur filtern und diese auf ein schwarzes Bild übertragen
         img_line = np.zeros(img.shape, dtype="uint8")
         line = max(contours, key=cv2.contourArea)
@@ -90,9 +83,6 @@ class Line():
         
         # Skeletonize-Methode anwenden um die Linie auf einen Pixel Breite zu reduzieren
         new_img = skeletonize(img_line)
-
-        # cv2.imshow("",new_img.astype(np.uint8)*255)
-        # cv2.waitKey(0)
 
         # Ergebnis in ein binäres Bild übertragen
         new_img_2 = np.zeros(img.shape, dtype="uint8")
@@ -103,7 +93,7 @@ class Line():
                     new_img_2[row][column] = 1
 
         # Binäres Bild zurückgeben
-        return new_img_2
+        return new_img_2.astype(dtype="uint8")
 
     @staticmethod
     def states(img, START_X_COORDINATE:int, STATE_DIMENSION:int, generated = False, ss_only = False):
@@ -142,6 +132,8 @@ class Line():
             exit()
 
         print('STATUS: get start point done')
+
+        #cv2.imshow("123", line)
 
         if ss_only:
             point = points[0]
@@ -185,6 +177,7 @@ class Line():
                 x1 = point[0] - int(STATE_DIMENSION/2)
                 x2 = point[0] + int(STATE_DIMENSION/2) +1
                 states.append(line[y1:y2, x1:x2])
+
 
         
         return points, states
