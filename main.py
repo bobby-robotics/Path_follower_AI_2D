@@ -6,6 +6,9 @@ import os
 import cv2
 import numpy as np
 from math import sin,cos, pi,sqrt
+
+from XMLParser.StringCompressionAndSplitting import StringCompressionAndSplitting
+from XMLParser.XMLParser import XMLParser
 from enum_motion import Motions
 from cv2 import WINDOW_NORMAL
 from Q_learning.training import training
@@ -119,27 +122,19 @@ def test_randomness():
 
 def main():
 
-    t = training(offset = 20,amount_of_imgs=15, visualise = True)
+    teststring = "rrrrdrdrddrcrdrcdrcrrrrwrrwurrwrurrrrruuuuwrrrururruuuuuwwuuuuulullluuuucuuuwuwrururrrrrrrrrdrdrddrcrdrcdrcrrrrwrrwurrwrurrrrruuuuwrrrururruuuuuwwuuuuulullluuuucuuuwuwrururrrrrrrrrdrdrddrcrdrcdrcrrrrwrrwurrwrurrrrruuuuwrrrururruuuuuwwuuuuulullluuuucuuuwuwrururrrrrrrrrdrdrddrcrdrcdrcrrrrwrrwurrwrurrrrruuuuwrrrururruuuuuwwuuuuulullluuuucuuuwuwrururrrrrrrrrdrdrddrcrdrcdrcrrrrwrrwurrwrurrrrruuuuwrrrururruuuuuwwuuuuulullluuuucuuuwuwrururrrrrrrrrdrdrddrcrdrcdrcrrrrwrrwurrwrurrrrruuuuwrrrururruuuuuwwuuuuulullluuuucuuuwuwrururrrrr"
+
+    #t = training(offset = 20,amount_of_imgs=15, visualise = True)
 
     t.train()    
 
     trainee = training(offset = 20, end_x= 540 ,visualise=True,execution=True)
 
-    # take an image
-    # img = take_pic.get_pic(cam_id)
-
-    img = cv2.imread(os.path.abspath('taken_images/2023-05-15_12_04_28.jpeg'))
-    if img is None:
-        print('Error: file could not be found or read.')
-        exit()
-
-    s = trainee.execute(img)
-
-    print(s)
-   
-
+    t.start_training()    
     #print(np.array(5))
 
+    splitted = StringCompressionAndSplitting.compressAndSplit(teststring)
+    XMLParser.parseToXML(splitted)
 
 if __name__ == '__main__':
     main()
