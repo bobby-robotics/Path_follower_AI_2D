@@ -119,9 +119,25 @@ def test_randomness():
 
 def main():
 
-    t = training(20,20, True)
+    t = training(offset = 20,amount_of_imgs=15, visualise = True)
 
-    t.start_training()    
+    t.train()    
+
+    trainee = training(offset = 20, end_x= 540 ,visualise=True,execution=True)
+
+    # take an image
+    # img = take_pic.get_pic(cam_id)
+
+    img = cv2.imread(os.path.abspath('taken_images/2023-05-15_12_04_28.jpeg'))
+    if img is None:
+        print('Error: file could not be found or read.')
+        exit()
+
+    s = trainee.execute(img)
+
+    print(s)
+   
+
     #print(np.array(5))
 
 
