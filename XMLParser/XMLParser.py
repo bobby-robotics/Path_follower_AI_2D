@@ -14,6 +14,12 @@ class XMLParser:
         target = ET.SubElement(root, "target")
         target.text = "Start"
 
+        config = ET.SubElement(root, "config")
+        i = ET.SubElement(config, "i")
+        a = ET.SubElement(config, "a")
+        i.text = "1" # <-- hier die Stepsize eintragen (1 = 1mm)
+        a.text = "1" # <-- hier die Winkelgröße eintragen (1 = 1°)
+
         seq = ET.SubElement(root, "seq")
         seqList = []
 
