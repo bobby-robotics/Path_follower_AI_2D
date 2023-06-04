@@ -122,15 +122,27 @@ def test_randomness():
 
 def main():
 
-    teststring = "rrrrdrdrddrcrdrcdrcrrrrwrrwurrwrurrrrruuuuwrrrururruuuuuwwuuuuulullluuuucuuuwuwrururrrrrrrrrdrdrddrcrdrcdrcrrrrwrrwurrwrurrrrruuuuwrrrururruuuuuwwuuuuulullluuuucuuuwuwrururrrrrrrrrdrdrddrcrdrcdrcrrrrwrrwurrwrurrrrruuuuwrrrururruuuuuwwuuuuulullluuuucuuuwuwrururrrrrrrrrdrdrddrcrdrcdrcrrrrwrrwurrwrurrrrruuuuwrrrururruuuuuwwuuuuulullluuuucuuuwuwrururrrrrrrrrdrdrddrcrdrcdrcrrrrwrrwurrwrurrrrruuuuwrrrururruuuuuwwuuuuulullluuuucuuuwuwrururrrrrrrrrdrdrddrcrdrcdrcrrrrwrrwurrwrurrrrruuuuwrrrururruuuuuwwuuuuulullluuuucuuuwuwrururrrrr"
+    #teststring = "rrrrdrdrddrcrdrcdrcrrrrwrrwurrwrurrrrruuuuwrrrururruuuuuwwuuuuulullluuuucuuuwuwrururrrrrrrrrdrdrddrcrdrcdrcrrrrwrrwurrwrurrrrruuuuwrrrururruuuuuwwuuuuulullluuuucuuuwuwrururrrrrrrrrdrdrddrcrdrcdrcrrrrwrrwurrwrurrrrruuuuwrrrururruuuuuwwuuuuulullluuuucuuuwuwrururrrrrrrrrdrdrddrcrdrcdrcrrrrwrrwurrwrurrrrruuuuwrrrururruuuuuwwuuuuulullluuuucuuuwuwrururrrrrrrrrdrdrddrcrdrcdrcrrrrwrrwurrwrurrrrruuuuwrrrururruuuuuwwuuuuulullluuuucuuuwuwrururrrrrrrrrdrdrddrcrdrcdrcrrrrwrrwurrwrurrrrruuuuwrrrururruuuuuwwuuuuulullluuuucuuuwuwrururrrrr"
 
-    #t = training(20,20, True)
+    # t = training(offset = 20,amount_of_imgs=15, visualise = True)
 
-    #t.start_training()
+    # t.train()    
+
+    img = take_pic.get_pic(1)
+
+    trainee = training(offset = 20, end_x= 540 ,visualise=True,execution=True)
+
+    # img = cv2.imread(os.path.abspath('taken_images/2023-05-15_12_09_14.jpeg'))
+    # if img is None:
+    #     print('Error: file could not be found or read.')
+    #     exit()
+
+
+    print(trainee.execute(img))
     #print(np.array(5))
 
-    splitted = StringCompressionAndSplitting.compressAndSplit(teststring)
-    XMLParser.parseToXML(splitted)
+    # splitted = StringCompressionAndSplitting.compressAndSplit(teststring)
+    # XMLParser.parseToXML(splitted)
 
 if __name__ == '__main__':
     main()

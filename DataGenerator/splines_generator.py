@@ -61,7 +61,7 @@ class data_gen:
         cwd_ = os.getcwd
 
         self.cwd = cwd_() + "\\generated_images"
-        print(self.cwd)
+        #print(self.cwd)
 
     #Splines Generator
     #Task: Generates Splines from points
