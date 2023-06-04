@@ -4,6 +4,7 @@ import pandas as pd
 import os
 from Q_learning.state import state
 from Q_learning.enviroment import enviroment
+from Q_learning.enum_rewards import rewards
 from enum_motion import Motions
 import cv2
 from cv2 import WINDOW_NORMAL
@@ -37,6 +38,9 @@ class q_learner():
     state = None
     visualise = None
     last_target = None
+    initial_tcp = None
+    initial_img_matrix = None
+    
 
     def __init__(self, visualise) -> None:
         self.file = os.getcwd() + "/Q_learning/q_table.csv"
@@ -44,10 +48,11 @@ class q_learner():
 
         self.visualise = visualise
 
-
     def init_params(self, img, initial_tcp, initial_img_matrix, last_target):
 
         self.img = img
+        self.initial_tcp = initial_tcp
+        self.initial_img_matrix = initial_img_matrix
 
         # starting point and orientation
         tool_def = np.zeros((5,5))
@@ -108,17 +113,7 @@ class q_learner():
             # the best known action Q(s,a)
             return np.argmax(self.q_table.get(hash(self.state)))
     
-    def greedy_exploration(self,offset):
-
-        alpha = 0.2
-        gamma = 0.8
-        Ne = 550
-
-        Nc = 1000
-
-        env = None
-        target_tcp = None
-        end = False
+    def get_first_targets(self,offset):
 
         targets = []
 
@@ -129,9 +124,35 @@ class q_learner():
         for w in wire:
             targets.append( hash(tuple(np.array([ w[1], w[0]]) )))
 
-        np.random.seed(42)
+        return targets        
+
+    def existance_update(self, env, optimal_policy = False):
+
+        self.state_existance()
+        a = self.choose_action()
+        s = hash(self.state)
+        row = self.q_table.get(s)
+
+        self.state.set_state(env.update_state(a, self.state, self.visualise, optimal_policy))
+
+        return a, s, row 
+
+    def greedy_exploration(self,offset):
+
+        alpha = 0.2
+        gamma = 0.8
+        #Ne = 700
+        Nc = 1000
+
+        first_try = False
+
+        env = None
+        target_tcp = None
+        end = False
+        targets = self.get_first_targets(offset)
         
-        last_stable_state = None
+
+        np.random.seed(42)
 
         for nc in range(Nc):
 
@@ -143,15 +164,11 @@ class q_learner():
                 print("init env one more time")
                 env = enviroment(self.img, target_tcp, targets, visualise=self.visualise, last_legit_state = self.state.get_state())
 
-
-            for i in range(Ne):
-                
-                self.state_existance()
-                a = self.choose_action()
-                s = hash(self.state)
-                row = self.q_table.get(s)
-
-                self.state.set_state(env.update_state(a, self.state, self.visualise))
+            col = False
+            i = 0
+            #for i in range(Ne):
+            while(col == False):
+                a, s, row = self.existance_update(env)
 
                 s_prim = hash(self.state)
                 self.state_existance()
@@ -163,20 +180,33 @@ class q_learner():
                 row[a] = row[a] + alpha*( r + gamma*row_prim[np.argmax(self.q_table.get(hash(self.state)))] - row[a])
 
                 self.q_table.update( {s : row} )
-               
 
                 if self.epsilon > 0.0:
-                    self.epsilon -= 1/100
+                    self.epsilon -= 1/6
+
+                if r == rewards.PASSED.value:
+                    i = 0
+                else:
+                    i += 1
+
+                if i == 6:
+                    col = True
 
                 print("Reward:" , r)
-                # if collision detected, set back to 
-                if col:
-                    print("\nCollision:",col)
+
+                if len(np.where(self.state.get_state()[0] == 1)) > 5:
+                    end = True
                     break
-                
+                    
                 if self.state.get_tcp_xy()[0] == self.last_target[0] and self.state.get_tcp_xy()[1] == self.last_target[1]:
                     end = True
-
+                    break
+                
+            if nc == 0 and col == False and end:
+                first_try = True
+                break
+            else:
+                first_try = False
             if end:
                 break
 
@@ -184,7 +214,32 @@ class q_learner():
             self.state.set_state( env.get_last_legit_state() )
             target_tcp = env.get_last_target()
             targets = env.get_targets()
-            
+                
             self.epsilon = 1 - 1/Nc
+
+        return first_try
    
-    
+    def optimal_policy(self, offset ,delimiter = ''):
+
+        end = True
+        movements = []
+        targets = self.get_first_targets(offset)
+        env = enviroment(self.img, targets=targets,visualise=self.visualise)
+
+        while(end):
+            a, s, row = self.existance_update(env, True)
+            movements.append(Motions(a).name)
+
+            if len(np.where(self.state.get_state()[0] == 1)) > 5:
+                end = False
+                break
+                
+            elif self.state.get_tcp_xy()[0] == self.last_target[0] and self.state.get_tcp_xy()[1] == self.last_target[1]:
+                end = False
+                break
+        
+        print(len(movements))
+        return delimiter.join(movements)
+
+            
+            
