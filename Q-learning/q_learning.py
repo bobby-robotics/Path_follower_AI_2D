@@ -1,4 +1,4 @@
-from enum_motion import Moutions
+from enum_motion import Motions
 import numpy as np
 
 #*************************************
@@ -44,7 +44,7 @@ class q_learning():
 
             # if random probability smaller than epsilon 
             # agent should choose a random action     
-            return np.random.randint(low = 0, high = len(Moutions), size = 1, dtype = "int16" )[0]
+            return np.random.randint(low = 0, high = len(Motions), size = 1, dtype ="int16")[0]
         
         else:
             # agent is taking a known action
@@ -54,27 +54,27 @@ class q_learning():
 
         action_vector = np.zeros(3)
 
-        if Moutions[action_nr] == "r":
+        if Motions[action_nr] == "r":
 
             action_vector[0] += 1
 
-        elif Moutions[action_nr] == "l":
+        elif Motions[action_nr] == "l":
 
             action_vector[0] -= 1
 
-        elif Moutions[action_nr] == "u":
+        elif Motions[action_nr] == "u":
 
             action_vector[1] -= 1
 
-        elif Moutions[action_nr] == "d":
+        elif Motions[action_nr] == "d":
 
             action_vector[1] += 1
 
-        elif Moutions[action_nr] == "c":
+        elif Motions[action_nr] == "c":
 
             action_vector[2] -= 45
 
-        elif Moutions[action_nr] == "w":
+        elif Motions[action_nr] == "w":
 
             action_vector[2] += 45
 

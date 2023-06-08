@@ -1,6 +1,8 @@
 import cv2
 import os
 from datetime import datetime
+import time
+
 
 class take_pic():
 
@@ -27,8 +29,12 @@ class take_pic():
             if cap.isOpened():
 
                 # read the capture and get 
-                # result and frame captured 
+                # result and frame captured
+
+                time.sleep(1)
                 res,frame = cap.read()
+
+
 
                 # releasing camera immediately after capturing picture
                 cap.release() 
