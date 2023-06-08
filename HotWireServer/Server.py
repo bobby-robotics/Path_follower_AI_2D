@@ -61,6 +61,7 @@ class ClientThread(Thread):
         global ai_config
 
         print("Server started")
+
         while True:
             try:
                 data = self.conn.recv(self.buff_size)
@@ -130,6 +131,7 @@ class AiThread(Thread):
 
                 #fotoaufnahme
                 img = take_pic().get_pic(camerainput)
+                print("AI_THREAD    | Photo taken.")
                 #hier q learner starten
                 trainer = training(offset = 20, end_x= 530 ,visualise=True,execution=True)
                 path = trainer.execute(img)
@@ -186,10 +188,3 @@ def ai():
     ai_thread = AiThread()
     ai_thread.start()
 
-
-# ******************************************************************************
-# Main program
-# ******************************************************************************
-if __name__ == '__main__':
-    ai()
-    server()
