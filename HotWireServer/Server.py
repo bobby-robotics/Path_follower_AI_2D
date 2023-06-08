@@ -20,6 +20,8 @@ ai_state = 0
 ai_sequence = ""
 ai_config = ""
 
+camerainput = 1
+
 
 # ******************************************************************************
 # Common methods and functions
@@ -57,6 +59,8 @@ class ClientThread(Thread):
         global ai_state
         global ai_sequence
         global ai_config
+
+        print("Server started")
         while True:
             try:
                 data = self.conn.recv(self.buff_size)
@@ -118,21 +122,24 @@ class AiThread(Thread):
         #global ai_config
         ai_sequence = ""
         ai_config = ""
+
+        print("AI_THREAD    | AI thread started.")
+
         while True:
             if ai_state == 1:
-               #self.ai.take_photo()
-               #self.ai.solver()
-               #ai_sequence = self.ai.seq
-               #ai_config = self.ai.config
 
-               #fotoaufnahme
-                img = take_pic().get_pic(1)
-                   #hier q learner starten
+                #fotoaufnahme
+                img = take_pic().get_pic(camerainput)
+                #hier q learner starten
                 trainer = training(offset = 20, end_x= 530 ,visualise=True,execution=True)
                 path = trainer.execute(img)
+                #teststring = "rrrrrrdrdrddrcrdrcdrcrrrrwrrwurrwrurrrrruuuuwrrrururruuuuuwwuuuuulullluuuucuuuwuwrururrrrrrrrrdrdrddrcrdrcdrcrrrrwrrwurrwrurrrrruuuuwrrrururruuuuuwwuuuuulullluuuucuuuwuwrururrrrrrrrrdrdrddrcrdrcdrcrrrrwrrwurrwrurrrrruuuuwrrrururruuuuuwwuuuuulullluuuucuuuwuwrururrrrrrrrrdrdrddrcrdrcdrcrrrrwrrwurrwrurrrrruuuuwrrrururruuuuuwwuuuuulullluuuucuuuwuwrururrrrrrrrrdrdrddrcrdrcdrcrrrrwrrwurrwrurrrrruuuuwrrrururruuuuuwwuuuuulullluuuucuuuwuwrururrrrrrrrrdrdrddrcrdrcdrcrrrrwrrwurrwrurrrrruuuuwrrrururruuuuuwwuuuuulullluuuucuuuwuwrururrrrr"
                 split = StringCompressionAndSplitting.compressAndSplit(path)
                 XMLParser.parseToXML(split)
+
+                print("XML generated, sending to LBR")
                 ai_state = 2
+
                 break
 
 
@@ -144,12 +151,14 @@ def server():
     clients = []
 
     tcp_server = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
+
     try:
         tcp_server.setsockopt(socket.SOL_SOCKET, socket.SO_REUSEADDR, 1)
         tcp_server.bind((SRV_IP, SRV_PORT))
         print("### SRV: started **************************************************")
         print("### SRV: waiting for connections from TCP clients on port-no: ", SRV_PORT)
         srv_run = True
+
     except socket.error as err:
         print("### SRV: some errors while starting:\n", err)
         srv_run = False
@@ -158,6 +167,11 @@ def server():
     while srv_run:
         tcp_server.listen(1)
         (conn, (ip, port)) = tcp_server.accept()
+
+        #fortesting:
+        #conn, port = "", ""
+        #ip = LBR_IP #delete after testing
+
         if ip == LBR_IP:  # only KUKA LBR4+ allowed
             new_client = ClientThread(conn, ip, port, BUFF_SIZE)
             new_client.start()
