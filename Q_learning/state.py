@@ -1,10 +1,10 @@
 import numpy as np
 import copy
 
-# definition of the state is 5x5x2 matrix
-# in which the first 5x5 matrix is the 
+# definition of the state is 7x7x2 tensor
+# in which the first 7x7 matrix is the 
 # cropped part of the image 
-# and the second one is np.zeros(5,5)
+# and the second one is np.zeros(7,7)
 # with two points set for the 
 # fork and in the middle are the tcp_x and tcp_y 
 # coordinates saved which are used only internaly
@@ -12,28 +12,36 @@ import copy
 # degrees
 
 # Example
-# first 5x5 matrix (wire)
-#[[[  0.   0.   0.   0.   0.]
-#  [  0.   0.   0.   0.   0.]
-#  [  1.   1.   0.   0.   0.]
-#  [  0.   0.   1.   1.   0.]
-#  [  0.   0.   0.   0.   1.]]
+# first 7x7 matrix (wire)
+#[[[ 0.  0.   0.   0.   0.   0.  0.]
+#  [ 1.  0.   0.   0.   0.   0.  0.]
+#  [ 0.  1.   0.   0.   0.   0.  0.]
+#  [ 0.  1.   1.   0.   0.   0.  0.]
+#  [ 0.  0.   0.   1.   1.   0.  0.]
+#  [ 0.  0.   0.   0.   0.   1.  0.]
+#  [ 0.  0.   0.   0.   0.   1.  0.]]
 #
-# second 5x5 matrix ( tool and all
+# second 7x7 matrix ( tool and all
 #   infos needed for it)
-# [[  0.   0.   0.   0. -45.]
-#  [  0.   0.   0.   1.   0.]
-#  [  0.   0.  34. 295.   0.]
-#  [  0.   1.   0.   0.   0.]
-#  [  0.   0.   0.   0.   0.]]]
+# [[ 0.  0.   0.   0.   0.   0.  45.]
+#  [ 0.  0.   0.   0.   0.   1.   0.]
+#  [ 0.  0.   0.   0.   0.   0.   0.]
+#  [ 0.  0.   0.   34.  295. 0.   0.]
+#  [ 0.  0.   0.   0.   0.   0.   0.]
+#  [ 0.  1.   0.   0.   0.   0.   0.]
+#  [ 0.  0.   0.   0.   0.   0.   0.]]]
 
 class state():
 
     current_state = None
+    middle = None
 
     # self explanatory
     def __init__(self, current_state) -> None:
+        #print(current_state)
         self.current_state = current_state
+        self.middle = int(current_state[1].shape[0]/2)
+        #print("MIDDLE",self.middle)
 
     # hashing fuction that hashes our 5x5x2 matrix 
     # so that we have an unique ID for every state
@@ -42,16 +50,18 @@ class state():
     # anywhere on to the image
     def __hash__(self) -> int:     
         curr = copy.deepcopy(self.current_state)
-        curr[1][2,2:4] = 0
+        curr[1][self.middle,self.middle:self.middle+2] = 0
+        #print("To Hash: ", curr)
+        #print(tuple(curr.flatten()))
         return hash(tuple(curr.flatten()))
     
     # self explanatory
     def get_tcp_xy(self) -> np.array:
-        return np.array([self.current_state[1][2,2], self.current_state[1][2,3]]).astype(int)
+        return np.array([self.current_state[1][self.middle,self.middle], self.current_state[1][self.middle,self.middle+1]]).astype(int)
     
     # self explanatory
     def get_orientation(self):
-        return self.current_state[1][0,4]
+        return self.current_state[1][0,2*self.middle]
 
     # self explanatory
     def get_state(self):
