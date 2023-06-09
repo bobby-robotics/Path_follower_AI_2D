@@ -14,7 +14,8 @@ from Bildverarbeitung.Final.take_pic import take_pic
 SRV_IP = '0.0.0.0'
 SRV_PORT = 1415
 BUFF_SIZE = 1024
-LBR_IP = "10.84.57.105"
+#LBR_IP = "10.84.57.105"
+LBR_IP = "127.0.0.1"
 
 ai_state = 0
 ai_sequence = ""
