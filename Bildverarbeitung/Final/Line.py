@@ -58,14 +58,14 @@ class Line():
         return ','.join(path)
 
     @staticmethod
-    def detect(original_img):
+    def detect(original_img,filter_size = 3):
 
         # Bild in Gray-Bild umwandeln
         img = cv2.cvtColor(original_img, cv2.COLOR_BGR2GRAY)
 
         
         # Schwellwert anwenden
-        img = cv2.medianBlur(img, 3)
+        img = cv2.medianBlur(img, filter_size)
         img = cv2.adaptiveThreshold(img, 255, cv2.ADAPTIVE_THRESH_GAUSSIAN_C, cv2.THRESH_BINARY_INV, 5, 2)
 
         height,width = img.shape
