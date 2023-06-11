@@ -24,18 +24,18 @@ def test_rotation():
 
     print(rot)
 
-    vector = np.array([2,0])
+    vector = np.array([3,0])
     # vector[0] -= 2
     # vector[1] -= 2
     
-    vector1 = np.array([2,4])
+    vector1 = np.array([3,6])
     # vector1[0] -= 2
     # vector1[1] -= 2
 
-    vector[0] -= 2
-    vector[1] -= 2
-    vector1[0] -= 2
-    vector1[1] -= 2
+    vector[0] -= 3
+    vector[1] -= 3
+    vector1[0] -= 3
+    vector1[1] -= 3
 
     # matr = np.zeros((5,5))
     # matr[vector[1] +  2,vector[0]+2] = 1
@@ -54,11 +54,11 @@ def test_rotation():
     #     if indexes is not None:
     #         print(i,indexes[0])
 
-    img = np.zeros((5,5))
+    img = np.zeros((7,7))
     for i in range(20):
         
-        img[vector[1] +  2,vector[0]+2] = 255
-        img[vector1[1] + 2,vector1[0]+2] = 64
+        img[vector[1] +  3,vector[0]+3] = 1
+        img[vector1[1] + 3,vector1[0]+3] = 1
         cv2.namedWindow('State', WINDOW_NORMAL)
         cv2.resizeWindow('State', 500,500)
         cv2.imshow("State",img)
@@ -66,23 +66,30 @@ def test_rotation():
 
         # transform
 
-        if 1 in np.absolute(vector):
-            vector = vector*sqrt(2)
+        if 2 in np.absolute(vector):
+            vector = vector*(sqrt(2)/4)
 
-        if 1 in np.absolute(vector1):
-            vector1 = vector1*sqrt(2)
+        if 2 in np.absolute(vector1):
+            vector1 = vector1*(sqrt(2)/4)
+
+        
 
         vector = np.matmul(rot,vector)
         vector1 = np.matmul(rot,vector1)
+
+        print(vector+3)
+        print(vector1+3)
 
         vector = (vector).astype("int")
 
         vector1 = (vector1).astype("int")        
 
-        print("vector:",vector+2)
-        print("vector1:",vector1+2)
+        print("vector:",vector+3)
+        print("vector1:",vector1+3)
 
         np.where(img == 1,img, img-1)
+
+        time.sleep(5)
 
 def test_pix_mm():
     fpm = four_points_method()
@@ -124,25 +131,31 @@ def main():
 
     #teststring = "rrrrdrdrddrcrdrcdrcrrrrwrrwurrwrurrrrruuuuwrrrururruuuuuwwuuuuulullluuuucuuuwuwrururrrrrrrrrdrdrddrcrdrcdrcrrrrwrrwurrwrurrrrruuuuwrrrururruuuuuwwuuuuulullluuuucuuuwuwrururrrrrrrrrdrdrddrcrdrcdrcrrrrwrrwurrwrurrrrruuuuwrrrururruuuuuwwuuuuulullluuuucuuuwuwrururrrrrrrrrdrdrddrcrdrcdrcrrrrwrrwurrwrurrrrruuuuwrrrururruuuuuwwuuuuulullluuuucuuuwuwrururrrrrrrrrdrdrddrcrdrcdrcrrrrwrrwurrwrurrrrruuuuwrrrururruuuuuwwuuuuulullluuuucuuuwuwrururrrrrrrrrdrdrddrcrdrcdrcrrrrwrrwurrwrurrrrruuuuwrrrururruuuuuwwuuuuulullluuuucuuuwuwrururrrrr"
 
-    # t = training(offset = 20,amount_of_imgs=15, visualise = True)
+    t = training(offset = 20,amount_of_imgs=1, visualise = True)
 
-    # t.train()    
+    t.train()    
+    # np.random.seed(42)
+    # for i in range(200):
+    #     a = np.random.random()
+    #     print(a)
+    #     print(int(a*10))
+    #     np.random.seed(int(a*10))
+    #img = take_pic.get_pic(1)
 
-    img = take_pic.get_pic(1)
+    trainee = training(offset = 20, end_x= 530 ,visualise=True,execution=True)
 
-    trainee = training(offset = 20, end_x= 540 ,visualise=True,execution=True)
+    cwd = os.getcwd()
 
-    # img = cv2.imread(os.path.abspath('taken_images/2023-05-15_12_09_14.jpeg'))
-    # if img is None:
-    #     print('Error: file could not be found or read.')
-    #     exit()
+    for file in os.listdir(cwd+"/taken_images"):
+        #rint(file)
+        if file.endswith(".jpeg"):
+            img = cv2.imread(os.path.abspath('taken_images/'+file))
+            if img is None:
+                print('Error: file could not be found or read.')
+                exit()
+            print(trainee.execute(img))
 
 
-    print(trainee.execute(img))
-    #print(np.array(5))
-
-    # splitted = StringCompressionAndSplitting.compressAndSplit(teststring)
-    # XMLParser.parseToXML(splitted)
 
 if __name__ == '__main__':
     main()
