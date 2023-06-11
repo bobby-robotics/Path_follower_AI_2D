@@ -14,7 +14,7 @@ class StringCompressionAndSplitting():
             else:
                 degrees = 1
                 if input[i] == "c" or input[i] == "w":  # noch anpassen, da bei counter < 1 dies nicht passiert
-                    degrees = 45
+                    degrees = 1 # da StepSize = 45
 
                 if counter * degrees > 1:
 
@@ -28,13 +28,13 @@ class StringCompressionAndSplitting():
     @staticmethod
     def splitString(string):
 
-        splitted = []
+        split = []
         for i in range((len(string)//50) + 1):
 
             sub = string[i*50:(i+1)*50]
-            splitted.append(sub)
+            split.append(sub)
 
-        return splitted
+        return split
 
     @staticmethod
     def compressAndSplit(string):
