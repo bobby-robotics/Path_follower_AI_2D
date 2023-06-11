@@ -45,11 +45,33 @@ class training():
         # init q learner
         self.q = q_learner(self.visualise) 
 
+     # finding the start and end point for the agent
+    # and taking the first 5x5 matrix from the starting point
+    def take_init_param(self,img):
+
+        point = np.where(img[:,self.offset] == 1)
+        point = np.asarray(point).transpose()
+
+        y1 = point[0][0] - 3
+        y2 = point[0][0] + 4
+        x1 = self.offset - 3 
+        x2 = self.offset + 4 
+
+        matrix = img[y1:y2, x1:x2]
+
+        # last target
+        point2 = np.where(img[:,self.end_x] == 1)
+        point2 = np.asarray(point2).transpose()
+
+        return point,point2,matrix
+
     # self explanatory
     def train(self):
 
         for img in self.imgs:
 
+            cv2.imshow("Image To Train:",img*255)
+            cv2.waitKey(1500)
             self.train_for_img(img)
 
             #s = self.train_for_img(img, self.q, True, ',')
@@ -68,50 +90,49 @@ class training():
 
         point, point2, matrix = self.take_init_param(img)
 
-        self.q.init_params(img, (self.offset, point[0][0]), matrix, np.array( [self.end_x, point2[0][0]] ))
+        #print(np.array([self.offset, point[0][0]]), matrix, np.array( [self.end_x, point2[0][0]] ))
 
+        self.q.init_params(img, np.array([self.offset, point[0][0]]), matrix, np.array( [self.end_x, point2[0][0]] ))
+
+        success = False
         if take_policy == False:
-           while(self.q.greedy_exploration(self.offset) == False):
-                self.q.init_params(img, (self.offset, point[0][0]), matrix, np.array( [self.end_x, point2[0][0]] ))
+            self.q.run_greedy_exploration(self.offset)
 
         else: 
-            while(self.q.greedy_exploration(self.offset) == False):
+            while success == False:
+                movements, success = self.q.optimal_policy(self.offset, delimiter = delimiter)
+                if success:
+                    break
                 self.q.init_params(img, (self.offset, point[0][0]), matrix, np.array( [self.end_x, point2[0][0]] ))
-            self.q.init_params(img, (self.offset, point[0][0]), matrix, np.array( [self.end_x, point2[0][0]] ))
-            return  self.q.optimal_policy(self.offset, delimiter = delimiter)
+                self.q.run_greedy_exploration(self.offset)
+                self.q.init_params(img, (self.offset, point[0][0]), matrix, np.array( [self.end_x, point2[0][0]] ))
 
-    # finding the start and end point for the agent
-    # and taking the first 5x5 matrix from the starting point
-    def take_init_param(self,img):
-
-        point = np.where(img[:,self.offset - 2] == 1)
-        point = np.asarray(point).transpose()
-        #print(point)
-
-        y1 = point[0][0] - 2
-        y2 = point[0][0] + 3
-        x1 = self.offset - 2 
-        x2 = self.offset + 3 
-
-        matrix = img[y1:y2, x1:x2]
-
-        # last target
-        point2 = np.where(img[:,self.end_x] == 1)
-        point2 = np.asarray(point2).transpose()
-
-        return point,point2,matrix
+            #movements, success = self.q.optimal_policy(self.offset, delimiter = delimiter)
+            return  movements
 
     # taking a pic and doing some operations with Line.detect(img)
     # so that we can have a binary pic
     # which our agent can learn and make an optimal policy for
-    def execute(self, img, delimiter = ''):
+    def execute(self, img, delimiter = '', camid = 1):
 
-        img = Line.detect(img)
+        cv2.imshow("Line",img)
+        cv2.waitKey(2000)
 
-        #for i in range(num_of_tries):
-        #self.train_for_img(img)
+        c = 'n'
+        filter_size = 1
 
-        s = self.train_for_img(img, take_policy = True, delimiter = delimiter)
+        while(c == 'n'):
+
+            img2 = Line.detect(img, filter_size)
+            cv2.imshow("Thinned Line:",img2*255)
+            cv2.waitKey(2000)
+            c = str(input("Good?y/n"))
+            if c == 'y':
+                break
+            filter_size +=2
+            #img = take_pic.get_pic(camid)
+
+        s = self.train_for_img(img2, take_policy = True, delimiter = delimiter)
 
         self.q.export_q_tabel()
 
