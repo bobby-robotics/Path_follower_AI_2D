@@ -2,6 +2,7 @@ import socket
 from threading import Thread
 import time
 import xml.etree.ElementTree as ET
+import cv2
 
 from Q_learning.training import training
 from XMLParser.StringCompressionAndSplitting import StringCompressionAndSplitting
@@ -132,6 +133,11 @@ class AiThread(Thread):
 
                 #fotoaufnahme
                 img = take_pic().get_pic(camerainput)
+
+                #img = cv2.imread('taken_images/2023-06-05_12_49_41.jpeg')
+                # if img == None:
+                #     exit()
+
                 print("AI_THREAD    | Photo taken.")
                 #hier q learner starten
                 trainer = training(offset = 20, end_x= 530 ,visualise=True,execution=True)
