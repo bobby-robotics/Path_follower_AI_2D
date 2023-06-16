@@ -25,9 +25,9 @@ class XMLParser:
             seqList = []
 
             if len(string) > 0:
-                for s in range(1, len(string)+1):
+                for s in range(0, len(string)):
                     seqList.append(ET.SubElement(seq, "s" + "{:02d}".format(s)))
-                    seqList[s-1].text = string[s-1]
+                    seqList[s].text = string[s]
             cwd = os.getcwd
             cwd = cwd() + "\\XMLParser\\XMLFiles\\"
             if not os.path.exists(cwd):
